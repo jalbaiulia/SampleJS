@@ -9,8 +9,31 @@
 		Reporting.App = {};
 		Reporting.App.Model = {};
 		Reporting.App.Helper = {};
+		const REQUIRE_CTX = {};
+
+		function require(moduleName, code) {
+			if (REQUIRE_CTX[moduleName]) {
+				return REQUIRE_CTX[moduleName];
+			}
+
+			const expr = ["(function(module, exports) {", code, "})(moduleCtx, moduleCtx.exports)"];
+			const moduleCtx = {exports: {}};
+
+			eval(expr.join(""));
+
+			REQUIRE_CTX[moduleName] = moduleCtx.exports;
+
+			return moduleCtx.exports;
+		}
+
+		let module = require("module2.js", "module.exports = { sayHello: (msg) => { console.log(msg); } }");
+		module.sayHello("it works");
+
+		let module2 = require("module2.js");
+		console.log(module === module2);
 	</script>
 
-	<script type="text/javascript" src="module1.js"></script>	
+	<script type="text/javascript" src="module1.js"></script>
+	<script type="text/javascript" src="bower_components/d3/d3.js"></script>
 </body>
 </html>
